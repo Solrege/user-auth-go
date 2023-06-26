@@ -49,11 +49,17 @@ type Post struct {
 	User    User `gorm:"foreignKey:User_id"`
 }
 
+func (Comments) TableName() string {
+	return "Comments"
+}
+
 type Comments struct {
-	Comment_id int
+	Comment_id int `gorm:"primaryKey"`
 	Post_id    int
 	User_id    int
 	Comment    string
+	User       User `gorm:"foreignKey:User_id"`
+	Post       Post `gorm:"foreignKey:Post_id"`
 }
 
 type Likes struct {

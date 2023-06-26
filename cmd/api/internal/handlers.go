@@ -207,3 +207,65 @@ func (h *Handlers) DeletePostHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, id)
 }
+
+func (h *Handlers) GetCommentsHandler(c *gin.Context) {
+	id := c.Param("id")
+
+	var comments []business.Comments
+
+	db, _ := platform.DbConnection()
+
+	result := db.Where("post_id = ?", id).Preload("User").Find(&comments)
+
+	if result.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Something went wrong",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, comments)
+}
+
+func (h *Handlers) NewCommentHandler(c *gin.Context) {
+	id := c.Param("id")
+
+	var comments business.Comments
+
+	if err := c.ShouldBindJSON(&comments); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	user_id, _ := c.Get("user_id")
+	userId := user_id.(float64)
+	comments.User_id = int(userId)
+
+	db, _ := platform.DbConnection()
+
+	// Check if the post exists
+	var post business.Post
+
+	res := db.First(&post, id)
+	if res.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Post not found",
+		})
+		return
+	}
+
+	comments.Post_id = post.Post_id
+
+	result := db.Create(&comments)
+
+	if result.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Something went wrong",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, comments)
+}
