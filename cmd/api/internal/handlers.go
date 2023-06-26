@@ -125,6 +125,7 @@ func (h *Handlers) LoginHandler(c *gin.Context) {
 
 func (h *Handlers) GetPostHandler(c *gin.Context) {
 	var post []business.Post
+
 	db, _ := platform.DbConnection()
 
 	result := db.Preload("User").Find(&post)
@@ -134,6 +135,10 @@ func (h *Handlers) GetPostHandler(c *gin.Context) {
 			"error": "Something went wrong",
 		})
 		return
+	}
+
+	for i := range post {
+		db.Model(&post[i]).Association("User").Find(&post[i].User)
 	}
 
 	c.JSON(http.StatusOK, post)
@@ -166,10 +171,14 @@ func (h *Handlers) NewPostHandler(c *gin.Context) {
 		})
 		return
 	}
+
+	//get user_id from header
 	user_id, _ := c.Get("user_id")
-	post.User_id = user_id.(int)
+	userId := user_id.(float64)
+	post.User_id = int(userId)
+
 	db, _ := platform.DbConnection()
-	result := db.Create(&post)
+	result := db.Preload("user").Create(&post)
 
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -179,4 +188,22 @@ func (h *Handlers) NewPostHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, post)
+}
+
+func (h *Handlers) DeletePostHandler(c *gin.Context) {
+	id := c.Param("id")
+	var post []business.Post
+
+	db, _ := platform.DbConnection()
+
+	delete := db.Where("post_id = ?", id).Delete(&post)
+
+	if delete.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Something went wrong",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, id)
 }

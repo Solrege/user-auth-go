@@ -25,7 +25,6 @@ func GenerateToken(user_id int) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	return (token.SignedString([]byte(os.Getenv("TOKEN_KEY"))))
-
 }
 
 func TokenValid(c *gin.Context) error {
@@ -39,13 +38,13 @@ func TokenValid(c *gin.Context) error {
 		return err
 	}
 
-	user_id, ok := claims["user_id"]
+	user_id, ok := (claims["user_id"]).(float64)
 
 	if !ok {
 		return errors.New("user Id no existe")
 	}
 
-	c.Set("user_id", user_id.(float64))
+	c.Set("user_id", user_id)
 	return nil
 }
 
