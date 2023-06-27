@@ -17,6 +17,7 @@ func InitRoutes(r *gin.Engine) {
 		g1.DELETE("/:id", h.DeletePostHandler)
 		g1.GET("/:id/comments", h.GetCommentsHandler)
 		g1.POST("/:id/comments", h.NewCommentHandler)
+		g1.DELETE("/:id/comments/:commentId", h.DeleteCommentHandler)
 	}
 
 }

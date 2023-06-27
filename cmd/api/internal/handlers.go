@@ -269,3 +269,21 @@ func (h *Handlers) NewCommentHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, comments)
 }
+
+func (h *Handlers) DeleteCommentHandler(c *gin.Context) {
+	commentId := c.Param("commentId")
+	var comment []business.Comments
+
+	db, _ := platform.DbConnection()
+
+	delete := db.Where("comment_id = ?", commentId).Delete(&comment)
+
+	if delete.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Something went wrong",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, commentId)
+}
