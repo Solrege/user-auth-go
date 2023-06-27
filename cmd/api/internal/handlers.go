@@ -306,3 +306,59 @@ func (h *Handlers) GetLikesHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, likes)
 }
+
+func (h *Handlers) AddLikeHandler(c *gin.Context) {
+	id := c.Param("id")
+
+	var like business.Likes
+
+	//get user_id from header
+	user_id, _ := c.Get("user_id")
+	userId := user_id.(float64)
+	like.User_id = int(userId)
+
+	db, _ := platform.DbConnection()
+
+	// Check if the post exists
+	var post business.Post
+
+	res := db.First(&post, id)
+	if res.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Post not found",
+		})
+		return
+	}
+
+	like.Post_id = post.Post_id
+
+	result := db.Create(&like)
+
+	if result.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Something went wrong",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, like)
+}
+
+func (h *Handlers) DeleteLikeHandler(c *gin.Context) {
+	likeId := c.Param("likeId")
+
+	var like business.Likes
+
+	db, _ := platform.DbConnection()
+
+	delete := db.Where("like_id = ?", likeId).Delete(&like)
+
+	if delete.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Something went wrong",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, likeId)
+}

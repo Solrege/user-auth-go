@@ -63,7 +63,7 @@ type Comments struct {
 }
 
 type Likes struct {
-	Like_id int
+	Like_id int `gorm:"primaryKey"`
 	User_id int
 	Post_id int
 	User    User `gorm:"foreignKey:User_id;references:User_id"`
@@ -71,7 +71,7 @@ type Likes struct {
 }
 
 type Relationships struct {
-	Id_relationships int
-	Follower_user_id int
-	Followed_user_id int
+	Id_relationships int `gorm:"primaryKey"`
+	Follower_user_id int `gorm:"foreignKey:User_id;references:User_id"`
+	Followed_user_id int `gorm:"foreignKey:User_id;references:User_id"`
 }
