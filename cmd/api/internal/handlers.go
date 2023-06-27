@@ -215,7 +215,7 @@ func (h *Handlers) GetCommentsHandler(c *gin.Context) {
 
 	db, _ := platform.DbConnection()
 
-	result := db.Where("post_id = ?", id).Preload("User").Find(&comments)
+	result := db.Where("post_id = ?", id).Preload("User").Preload("Post.User").Find(&comments)
 
 	if result.Error != nil {
 		c.JSON(http.StatusBadRequest, gin.H{

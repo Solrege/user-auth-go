@@ -46,7 +46,7 @@ type Post struct {
 	Post_id int `gorm:"primaryKey"`
 	User_id int
 	Text    string
-	User    User `gorm:"foreignKey:User_id"`
+	User    User `gorm:"foreignKey:User_id;references:User_id"`
 }
 
 func (Comments) TableName() string {
@@ -58,8 +58,8 @@ type Comments struct {
 	Post_id    int
 	User_id    int
 	Comment    string
-	User       User `gorm:"foreignKey:User_id"`
-	Post       Post `gorm:"foreignKey:Post_id"`
+	User       User `gorm:"foreignKey:User_id;references:User_id"`
+	Post       Post `gorm:"foreignKey:Post_id;references:Post_id"`
 }
 
 type Likes struct {
