@@ -66,6 +66,8 @@ type Likes struct {
 	Like_id int
 	User_id int
 	Post_id int
+	User    User `gorm:"foreignKey:User_id;references:User_id"`
+	Post    Post `gorm:"foreignKey:Post_id;references:Post_id"`
 }
 
 type Relationships struct {

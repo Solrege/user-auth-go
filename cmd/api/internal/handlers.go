@@ -287,3 +287,22 @@ func (h *Handlers) DeleteCommentHandler(c *gin.Context) {
 
 	c.JSON(http.StatusOK, commentId)
 }
+
+func (h *Handlers) GetLikesHandler(c *gin.Context) {
+	id := c.Param("id")
+
+	var likes []business.Likes
+
+	db, _ := platform.DbConnection()
+
+	result := db.Where("post_id = ?", id).Preload("User").Preload("Post.User").Find(&likes)
+
+	if result.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Something went wrong",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, likes)
+}
