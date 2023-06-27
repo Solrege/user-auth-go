@@ -144,6 +144,25 @@ func (h *Handlers) GetPostHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, post)
 }
 
+func (h *Handlers) GetPostByUserHandler(c *gin.Context) {
+	id := c.Param("id")
+
+	var post []business.Post
+	db, _ := platform.DbConnection()
+
+	result := db.Where("user_id = ?", id).Preload("User").Find(&post)
+
+	if result.Error != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Something went wrong",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, post)
+
+}
+
 func (h *Handlers) GetPostByIdHandler(c *gin.Context) {
 	id := c.Param("id")
 

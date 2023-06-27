@@ -9,7 +9,7 @@ func InitRoutes(r *gin.Engine) {
 	r.POST("/register", h.RegisterHandler)
 	r.POST("/login", h.LoginHandler)
 	r.GET("/homepage", JwtAuthMiddleware(), h.GetPostHandler)
-
+	r.GET("profile/:id", JwtAuthMiddleware(), h.GetPostByUserHandler)
 	g1 := r.Group("/post", JwtAuthMiddleware())
 	{
 		g1.POST("/", h.NewPostHandler)
